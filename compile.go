@@ -33,7 +33,8 @@ var (
 	profile_name := spec.Profile
 
 	result += GenerateProfileCode(profile_name, profile)
-	for struct_name, struct_def := range profile {
+	for _, struct_name := range SortedKeys(profile) {
+		struct_def := profile[struct_name]
 		struct_name := NormalizeName(struct_name)
 		result += GenerateStructCode(struct_name, profile_name, struct_def)
 		if spec.GenerateDebugString {
