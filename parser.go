@@ -196,7 +196,7 @@ func (self Uint8Parser) PrototypeName() string {
 func (self Uint8Parser) Compile(struct_name string, field_name string) string {
 	return fmt.Sprintf(`
 func (self *%[1]s) %[2]s() byte {
-   return ParseByte(self.Reader, self.Profile.Off_%[1]s_%[2]s + self.Offset)
+   return ParseUint8(self.Reader, self.Profile.Off_%[1]s_%[2]s + self.Offset)
 }
 `, struct_name, field_name)
 }
