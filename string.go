@@ -12,7 +12,7 @@ func (self StringParser) Prototype() string {
 func ParseTerminatedString(reader io.ReaderAt, offset int64) string {
    data := make([]byte, 1024)
    n, err := reader.ReadAt(data, offset)
-   if err != nil {
+   if err != nil && err != io.EOF {
      return ""
    }
    idx := bytes.Index(data[:n], []byte{0})
@@ -25,7 +25,7 @@ func ParseTerminatedString(reader io.ReaderAt, offset int64) string {
 func ParseString(reader io.ReaderAt, offset int64, length int64) string {
    data := make([]byte, length)
    n, err := reader.ReadAt(data, offset)
-   if err != nil {
+   if err != nil && err != io.EOF {
       return ""
    }
    return string(data[:n])
@@ -74,7 +74,7 @@ func (self UTF16StringParser) Prototype() string {
 func ParseTerminatedUTF16String(reader io.ReaderAt, offset int64) string {
    data := make([]byte, 1024)
    n, err := reader.ReadAt(data, offset)
-   if err != nil {
+   if err != nil && err != io.EOF {
      return ""
    }
 
@@ -88,7 +88,7 @@ func ParseTerminatedUTF16String(reader io.ReaderAt, offset int64) string {
 func ParseUTF16String(reader io.ReaderAt, offset int64, length int64) string {
    data := make([]byte, length)
    n, err := reader.ReadAt(data, offset)
-   if err != nil {
+   if err != nil && err != io.EOF {
      return ""
    }
    return UTF16BytesToUTF8(data[:n], binary.LittleEndian)
