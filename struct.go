@@ -7,8 +7,8 @@ import (
 
 func GeneratePrototypes() string {
 	result := ""
-	for _, v := range prototypes {
-		result += v
+	for _, k := range SortedKeys(prototypes) {
+		result += prototypes[k]
 	}
 
 	return result
@@ -36,7 +36,8 @@ func (self *%s) Size() int {
 		name,
 		name, definition.Size)
 
-	for field_name, field_def := range definition.Fields {
+	for _, field_name := range SortedKeys(definition.Fields) {
+		field_def := definition.Fields[field_name]
 		result += field_def.GetParser().Compile(name, field_name)
 	}
 
@@ -47,7 +48,8 @@ func GenerateDebugString(name string, profile_name string, definition *StructDef
 	result := fmt.Sprintf(
 		"func (self *%s) DebugString() string {\n    result := fmt.Sprintf("+
 			"\"struct %s @ %%#x:\\n\", self.Offset)\n", name, name)
-	for field_name, field_def := range definition.Fields {
+	for _, field_name := range SortedKeys(definition.Fields) {
+		field_def := definition.Fields[field_name]
 		if field_def.StringParser != nil ||
 			field_def.UTF16StringParser != nil {
 			result += fmt.Sprintf(

@@ -39,9 +39,12 @@ func GenerateProfileCode(
 	result := fmt.Sprintf("type %s struct {\n", profile_name)
 	init := []string{}
 	factories := ""
-	for struct_name, struct_def := range profile {
+	for _, struct_name := range SortedKeys(profile) {
+		struct_def := profile[struct_name]
 		struct_name = NormalizeName(struct_name)
-		for field_name, field_def := range struct_def.Fields {
+		for _, field_name := range SortedKeys(struct_def.Fields) {
+			field_def := struct_def.Fields[field_name]
+
 			result += fmt.Sprintf("    Off_%s_%s int64\n",
 				struct_name, field_name)
 			init = append(init, fmt.Sprintf("%d", field_def.Offset))

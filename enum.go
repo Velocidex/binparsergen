@@ -43,7 +43,8 @@ func (self *%[1]s) %[2]s() *Enumeration {
    switch value {
 `, struct_name, field_name, parser_func)
 
-	for k, v := range self.Choices {
+	for _, k := range SortedIntKeys(self.Choices) {
+		v := self.Choices[k]
 		result += fmt.Sprintf(`
       case %d:
          name = "%s"

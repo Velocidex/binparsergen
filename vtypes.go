@@ -28,7 +28,8 @@ func ConvertSpec(spec *ConversionSpec) (map[string]*StructDefinition, error) {
 
 	profile := make(map[string]*StructDefinition)
 
-	for type_name, definition_list := range types {
+	for _, type_name := range SortedKeys(types) {
+		definition_list := types[type_name]
 		if !InString(spec.Structs, type_name) {
 			continue
 		}
@@ -47,7 +48,8 @@ func ConvertSpec(spec *ConversionSpec) (map[string]*StructDefinition, error) {
 			return nil, err
 		}
 
-		for field_name, field_def := range fields {
+		for _, field_name := range SortedKeys(fields) {
+			field_def := fields[field_name]
 			if InString(spec.FieldBlackList[type_name], field_name) {
 				continue
 			}
