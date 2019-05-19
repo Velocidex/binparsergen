@@ -45,11 +45,25 @@ func (self *%s) Size() int {
 
 func GenerateDebugString(name string, profile_name string, definition *StructDefinition) string {
 	result := fmt.Sprintf(
-		"func (self *%s) DebugString() string {\n    result := \"\"\n", name)
+		"func (self *%s) DebugString() string {\n    result := fmt.Sprintf("+
+			"\"struct %s @ %%#x:\\n\", self.Offset)\n", name, name)
 	for field_name, field_def := range definition.Fields {
-		if field_def.Uint64Parser != nil {
+		if field_def.StringParser != nil ||
+			field_def.UTF16StringParser != nil {
+			result += fmt.Sprintf(
+				"    result += fmt.Sprintf(\"%[1]s: %%v\\n\", string(self.%[1]s()))\n",
+				field_name)
+
+		} else if field_def.Uint64Parser != nil ||
+			field_def.BitField != nil ||
+			field_def.Uint16Parser != nil ||
+			field_def.Uint32Parser != nil {
 			result += fmt.Sprintf(
 				"    result += fmt.Sprintf(\"%[1]s: %%#0x\\n\", self.%[1]s())\n",
+				field_name)
+		} else if field_def.Enumeration != nil {
+			result += fmt.Sprintf(
+				"    result += fmt.Sprintf(\"%[1]s: %%v\\n\", self.%[1]s().DebugString())\n",
 				field_name)
 		} else if field_def.StructParser != nil {
 			result += fmt.Sprintf(

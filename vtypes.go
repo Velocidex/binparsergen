@@ -52,6 +52,10 @@ func ConvertSpec(spec *ConversionSpec) (map[string]*StructDefinition, error) {
 				continue
 			}
 
+			allowed_fields, pres := spec.FieldWhiteList[type_name]
+			if pres && !InString(allowed_fields, field_name) {
+				continue
+			}
 			struct_def.Fields[field_name] = ParseFieldDef(field_def, spec)
 		}
 
@@ -111,12 +115,37 @@ func _ParseParams(params []json.RawMessage, spec *ConversionSpec) *FieldDefiniti
 			Target:     target_field_def,
 		}
 
+	case "Enumeration":
+		enumeration := &Enumeration{BaseParser: base_parser}
+		err = json.Unmarshal(params[1], &enumeration)
+		kingpin.FatalIfError(err, "Decoding")
+
+		new_field_def.Enumeration = enumeration
+
 	case "BitField":
 		bitfield := &BitField{BaseParser: base_parser}
 		err = json.Unmarshal(params[1], &bitfield)
 		kingpin.FatalIfError(err, "Decoding")
 
 		new_field_def.BitField = bitfield
+
+	case "String":
+		string_parser := &StringParser{BaseParser: base_parser}
+		if len(params) > 1 {
+			err = json.Unmarshal(params[1], &string_parser)
+			kingpin.FatalIfError(err, "Decoding")
+		}
+
+		new_field_def.StringParser = string_parser
+
+	case "UnicodeString":
+		string_parser := &UTF16StringParser{BaseParser: base_parser}
+		if len(params) > 1 {
+			err = json.Unmarshal(params[1], &string_parser)
+			kingpin.FatalIfError(err, "Decoding")
+		}
+
+		new_field_def.UTF16StringParser = string_parser
 
 	case "Array":
 		vtype_array := &VtypeArray{}

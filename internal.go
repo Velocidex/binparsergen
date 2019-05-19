@@ -11,14 +11,17 @@ type FieldDefinition struct {
 
 	// A field may be one of the following parsers. Only one of
 	// these parsers is allowed.
-	Uint64Parser *Uint64Parser `json:"Uint64Parser,omitempty"`
-	Uint32Parser *Uint32Parser `json:"Uint32Parser,omitempty"`
-	Uint16Parser *Uint16Parser `json:"Uint16Parser,omitempty"`
-	Uint8Parser  *Uint8Parser  `json:"Uint8Parser,omitempty"`
-	StructParser *StructParser `json:"StructParser,omitempty"`
-	ArrayParser  *ArrayParser  `json:"ArrayParser,omitempty"`
-	Pointer      *Pointer      `json:"Pointer,omitempty"`
-	BitField     *BitField     `json:"BitField,omitempty"`
+	Uint64Parser      *Uint64Parser      `json:"Uint64Parser,omitempty"`
+	Uint32Parser      *Uint32Parser      `json:"Uint32Parser,omitempty"`
+	Uint16Parser      *Uint16Parser      `json:"Uint16Parser,omitempty"`
+	Uint8Parser       *Uint8Parser       `json:"Uint8Parser,omitempty"`
+	StructParser      *StructParser      `json:"StructParser,omitempty"`
+	ArrayParser       *ArrayParser       `json:"ArrayParser,omitempty"`
+	Pointer           *Pointer           `json:"Pointer,omitempty"`
+	BitField          *BitField          `json:"BitField,omitempty"`
+	Enumeration       *Enumeration       `json:"Enumeration,omitempty"`
+	StringParser      *StringParser      `json:"StringParser,omitempty"`
+	UTF16StringParser *UTF16StringParser `json:"UTF16StringParser,omitempty"`
 }
 
 // Extract the active parser from the field definition.
@@ -46,6 +49,15 @@ func (self *FieldDefinition) GetParser() Parser {
 
 	} else if self.BitField != nil {
 		result = self.BitField
+
+	} else if self.Enumeration != nil {
+		result = self.Enumeration
+
+	} else if self.StringParser != nil {
+		result = self.StringParser
+
+	} else if self.UTF16StringParser != nil {
+		result = self.UTF16StringParser
 
 	}
 
