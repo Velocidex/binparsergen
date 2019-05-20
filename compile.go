@@ -44,6 +44,5 @@ var (
 	}
 
 	result += GeneratePrototypes()
-
 	return result
 }

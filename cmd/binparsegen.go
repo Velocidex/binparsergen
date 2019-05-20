@@ -1,35 +1,28 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 
-	kingpin "gopkg.in/alecthomas/kingpin.v2"
 	"www.velocidex.com/golang/binparsergen"
 )
 
-var (
-	app = kingpin.New("vtype",
-		"A tool for managing vtype definitions.")
+func main() {
+	flag.Parse()
 
-	convert_command_file_arg = app.Arg(
-		"file", "The yaml file to inspect",
-	).Required().String()
-)
+	args := flag.Args()
+	if len(args) != 1 {
+		flag.Usage()
+		os.Exit(1)
+	}
 
-func doConvert() {
-	spec, err := binparsergen.LoadSpecFile(*convert_command_file_arg)
-	kingpin.FatalIfError(err, "Reading")
+	spec, err := binparsergen.LoadSpecFile(args[0])
+	binparsergen.FatalIfError(err, "Reading")
 
 	profile, err := binparsergen.ConvertSpec(spec)
-	kingpin.FatalIfError(err, "Parsing")
+	binparsergen.FatalIfError(err, "Parsing")
 
 	fmt.Println(binparsergen.GenerateCode(spec, profile))
-}
 
-func main() {
-	app.HelpFlag.Short('h')
-	app.UsageTemplate(kingpin.CompactUsageTemplate)
-	kingpin.MustParse(app.Parse(os.Args[1:]))
-	doConvert()
 }

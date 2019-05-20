@@ -2,11 +2,17 @@ package binparsergen
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"os"
-
-	kingpin "gopkg.in/alecthomas/kingpin.v2"
 )
+
+func FatalIfError(err error, format string, args ...interface{}) {
+	if err != nil {
+		fmt.Printf(format, args...)
+		os.Exit(1)
+	}
+}
 
 func ConvertSpec(spec *ConversionSpec) (map[string]*StructDefinition, error) {
 	fd, err := os.Open(spec.Filename)
@@ -71,11 +77,11 @@ func ParseFieldDef(field_def []*json.RawMessage, spec *ConversionSpec) *FieldDef
 	var offset uint64
 
 	err := json.Unmarshal(*field_def[0], &offset)
-	kingpin.FatalIfError(err, "Decoding target offset")
+	FatalIfError(err, "Decoding target offset")
 
 	var params []json.RawMessage
 	err = json.Unmarshal(*field_def[1], &params)
-	kingpin.FatalIfError(err, "Decoding target params")
+	FatalIfError(err, "Decoding target params")
 
 	new_field_def := _ParseParams(params, spec)
 	new_field_def.Offset = offset
@@ -89,7 +95,7 @@ func _ParseParams(params []json.RawMessage, spec *ConversionSpec) *FieldDefiniti
 
 	var parser_name string
 	err := json.Unmarshal(params[0], &parser_name)
-	kingpin.FatalIfError(err, "Decoding parser name")
+	FatalIfError(err, "Decoding parser name")
 
 	switch parser_name {
 	case "unsigned long long", "long long":
@@ -107,7 +113,7 @@ func _ParseParams(params []json.RawMessage, spec *ConversionSpec) *FieldDefiniti
 	case "Pointer":
 		vtype_array := &VtypeArray{}
 		err = json.Unmarshal(params[1], &vtype_array)
-		kingpin.FatalIfError(err, "Decoding")
+		FatalIfError(err, "Decoding")
 
 		target_field_def := _ParseParams([]json.RawMessage{
 			vtype_array.Target, vtype_array.TargetArgs}, spec)
@@ -120,14 +126,14 @@ func _ParseParams(params []json.RawMessage, spec *ConversionSpec) *FieldDefiniti
 	case "Enumeration":
 		enumeration := &Enumeration{BaseParser: base_parser}
 		err = json.Unmarshal(params[1], &enumeration)
-		kingpin.FatalIfError(err, "Decoding")
+		FatalIfError(err, "Decoding")
 
 		new_field_def.Enumeration = enumeration
 
 	case "BitField":
 		bitfield := &BitField{BaseParser: base_parser}
 		err = json.Unmarshal(params[1], &bitfield)
-		kingpin.FatalIfError(err, "Decoding")
+		FatalIfError(err, "Decoding")
 
 		new_field_def.BitField = bitfield
 
@@ -135,7 +141,7 @@ func _ParseParams(params []json.RawMessage, spec *ConversionSpec) *FieldDefiniti
 		string_parser := &StringParser{BaseParser: base_parser}
 		if len(params) > 1 {
 			err = json.Unmarshal(params[1], &string_parser)
-			kingpin.FatalIfError(err, "Decoding")
+			FatalIfError(err, "Decoding")
 		}
 
 		new_field_def.StringParser = string_parser
@@ -144,7 +150,7 @@ func _ParseParams(params []json.RawMessage, spec *ConversionSpec) *FieldDefiniti
 		string_parser := &UTF16StringParser{BaseParser: base_parser}
 		if len(params) > 1 {
 			err = json.Unmarshal(params[1], &string_parser)
-			kingpin.FatalIfError(err, "Decoding")
+			FatalIfError(err, "Decoding")
 		}
 
 		new_field_def.UTF16StringParser = string_parser
@@ -152,7 +158,7 @@ func _ParseParams(params []json.RawMessage, spec *ConversionSpec) *FieldDefiniti
 	case "Array":
 		vtype_array := &VtypeArray{}
 		err = json.Unmarshal(params[1], &vtype_array)
-		kingpin.FatalIfError(err, "Decoding")
+		FatalIfError(err, "Decoding")
 
 		target_field_def := _ParseParams([]json.RawMessage{
 			vtype_array.Target, vtype_array.TargetArgs}, spec)
