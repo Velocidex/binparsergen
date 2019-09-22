@@ -16,25 +16,17 @@ func GeneratePrototypes() string {
 
 func GenerateStructCode(name string, profile_name string, definition *StructDefinition) string {
 	result := fmt.Sprintf(`
-type %s struct {
+type %[1]s struct {
     Reader io.ReaderAt
     Offset int64
-    Profile *%s
+    Profile *%[2]s
 }
 
-func New%s(reader io.ReaderAt) *%s {
-    self := &%s{Reader: reader}
-    return self
-}
-
-func (self *%s) Size() int {
-    return %d
+func (self *%[1]s) Size() int {
+    return %[3]d
 }
 `,
-		name, profile_name,
-		name, name,
-		name,
-		name, definition.Size)
+		name, profile_name, definition.Size)
 
 	for _, field_name := range SortedKeys(definition.Fields) {
 		field_def := definition.Fields[field_name]
@@ -57,16 +49,22 @@ func GenerateDebugString(name string, profile_name string, definition *StructDef
 				field_name)
 
 		} else if field_def.Uint64Parser != nil ||
+			field_def.Int64Parser != nil ||
 			field_def.BitField != nil ||
 			field_def.Uint16Parser != nil ||
-			field_def.Uint32Parser != nil {
+			field_def.Int16Parser != nil ||
+			field_def.Uint32Parser != nil ||
+			field_def.Int32Parser != nil ||
+			field_def.Uint8Parser != nil ||
+			field_def.Int8Parser != nil {
 			result += fmt.Sprintf(
 				"    result += fmt.Sprintf(\"%[1]s: %%#0x\\n\", self.%[1]s())\n",
 				field_name)
-		} else if field_def.Enumeration != nil {
+		} else if field_def.Enumeration != nil || field_def.Flags != nil {
 			result += fmt.Sprintf(
 				"    result += fmt.Sprintf(\"%[1]s: %%v\\n\", self.%[1]s().DebugString())\n",
 				field_name)
+
 		} else if field_def.StructParser != nil {
 			result += fmt.Sprintf(
 				"    result += fmt.Sprintf(\"%[1]s: {\\n%%v}\\n\", self.%[1]s().DebugString())\n",

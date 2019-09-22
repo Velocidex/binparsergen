@@ -103,6 +103,43 @@ func (self Uint64Parser) Size(value string) string {
 	return "8"
 }
 
+type Int64Parser struct {
+	BaseParser
+}
+
+func (self Int64Parser) Compile(struct_name string, field_name string) string {
+	return fmt.Sprintf(`
+func (self *%[1]s) %[2]s() int64 {
+    return ParseUint64(self.Reader, self.Profile.Off_%[1]s_%[2]s + self.Offset)
+}
+`, struct_name, field_name)
+}
+
+func (self Int64Parser) Prototype() string {
+	return fmt.Sprintf(`
+func ParseInt64(reader io.ReaderAt, offset int64) int64 {
+    data := make([]byte, 8)
+    _, err := reader.ReadAt(data, offset)
+    if err != nil {
+       return 0
+    }
+    return binary.LittleEndian.Uint64(data)
+}
+`)
+}
+
+func (self Int64Parser) PrototypeName() string {
+	return "ParseInt64"
+}
+
+func (self Int64Parser) GoType() string {
+	return "int64"
+}
+
+func (self Int64Parser) Size(value string) string {
+	return "8"
+}
+
 type Uint32Parser struct {
 	BaseParser
 }
@@ -135,6 +172,41 @@ func (self Uint32Parser) GoType() string {
 	return "uint32"
 }
 func (self Uint32Parser) Size(value string) string {
+	return "4"
+}
+
+type Int32Parser struct {
+	BaseParser
+}
+
+func (self Int32Parser) Prototype() string {
+	return `
+func ParseInt32(reader io.ReaderAt, offset int64) int32 {
+    data := make([]byte, 4)
+    _, err := reader.ReadAt(data, offset)
+    if err != nil {
+       return 0
+    }
+    return int32(binary.LittleEndian.Uint32(data))
+}
+`
+}
+
+func (self Int32Parser) PrototypeName() string {
+	return "ParseInt32"
+}
+
+func (self Int32Parser) Compile(struct_name string, field_name string) string {
+	return fmt.Sprintf(`
+func (self *%[1]s) %[2]s() int32 {
+   return ParseInt32(self.Reader, self.Profile.Off_%[1]s_%[2]s + self.Offset)
+}
+`, struct_name, field_name)
+}
+func (self Int32Parser) GoType() string {
+	return "int32"
+}
+func (self Int32Parser) Size(value string) string {
 	return "4"
 }
 
@@ -173,6 +245,41 @@ func (self Uint16Parser) Size(value string) string {
 	return "2"
 }
 
+type Int16Parser struct {
+	BaseParser
+}
+
+func (self Int16Parser) Prototype() string {
+	return `
+func ParseInt16(reader io.ReaderAt, offset int64) int16 {
+    data := make([]byte, 2)
+    _, err := reader.ReadAt(data, offset)
+    if err != nil {
+       return 0
+    }
+    return int16(binary.LittleEndian.Uint16(data))
+}
+`
+}
+
+func (self Int16Parser) PrototypeName() string {
+	return "ParseInt16"
+}
+
+func (self Int16Parser) Compile(struct_name string, field_name string) string {
+	return fmt.Sprintf(`
+func (self *%[1]s) %[2]s() int16 {
+   return ParseInt16(self.Reader, self.Profile.Off_%[1]s_%[2]s + self.Offset)
+}
+`, struct_name, field_name)
+}
+func (self Int16Parser) GoType() string {
+	return "int16"
+}
+func (self Int16Parser) Size(value string) string {
+	return "2"
+}
+
 type Uint8Parser struct {
 	BaseParser
 }
@@ -204,6 +311,40 @@ func (self Uint8Parser) GoType() string {
 	return "byte"
 }
 func (self Uint8Parser) Size(v string) string {
+	return "1"
+}
+
+type Int8Parser struct {
+	BaseParser
+}
+
+func (self Int8Parser) Prototype() string {
+	return `
+func ParseInt8(reader io.ReaderAt, offset int64) int8 {
+    result := make([]byte, 1)
+    _, err := reader.ReadAt(result, offset)
+    if err != nil {
+       return 0
+    }
+    return int8(result[0])
+}
+`
+}
+func (self Int8Parser) PrototypeName() string {
+	return "ParseInt8"
+}
+
+func (self Int8Parser) Compile(struct_name string, field_name string) string {
+	return fmt.Sprintf(`
+func (self *%[1]s) %[2]s() int8 {
+   return ParseInt8(self.Reader, self.Profile.Off_%[1]s_%[2]s + self.Offset)
+}
+`, struct_name, field_name)
+}
+func (self Int8Parser) GoType() string {
+	return "int8"
+}
+func (self Int8Parser) Size(v string) string {
 	return "1"
 }
 
