@@ -98,17 +98,28 @@ func _ParseParams(params []json.RawMessage, spec *ConversionSpec) *FieldDefiniti
 	FatalIfError(err, "Decoding parser name")
 
 	switch parser_name {
-	case "unsigned long long", "long long":
+	case "unsigned long long":
 		new_field_def.Uint64Parser = &Uint64Parser{BaseParser: base_parser}
+	case "long long":
+		new_field_def.Int64Parser = &Int64Parser{BaseParser: base_parser}
 
-	case "unsigned long", "long":
+	case "unsigned long":
 		new_field_def.Uint32Parser = &Uint32Parser{BaseParser: base_parser}
 
-	case "unsigned short", "short":
+	case "long":
+		new_field_def.Int32Parser = &Int32Parser{BaseParser: base_parser}
+
+	case "unsigned short":
 		new_field_def.Uint16Parser = &Uint16Parser{BaseParser: base_parser}
 
-	case "unsigned char", "char":
+	case "short":
+		new_field_def.Int16Parser = &Int16Parser{BaseParser: base_parser}
+
+	case "unsigned char":
 		new_field_def.Uint8Parser = &Uint8Parser{BaseParser: base_parser}
+
+	case "char":
+		new_field_def.Int8Parser = &Int8Parser{BaseParser: base_parser}
 
 	case "Pointer":
 		vtype_array := &VtypeArray{}
@@ -129,6 +140,20 @@ func _ParseParams(params []json.RawMessage, spec *ConversionSpec) *FieldDefiniti
 		FatalIfError(err, "Decoding")
 
 		new_field_def.Enumeration = enumeration
+
+	case "Signature":
+		sig := &SignatureParser{BaseParser: base_parser}
+		err = json.Unmarshal(params[1], &sig)
+		FatalIfError(err, "Decoding")
+
+		new_field_def.SignatureParser = sig
+
+	case "Flags":
+		flags := &Flags{BaseParser: base_parser}
+		err = json.Unmarshal(params[1], &flags)
+		FatalIfError(err, "Decoding")
+
+		new_field_def.Flags = flags
 
 	case "BitField":
 		bitfield := &BitField{BaseParser: base_parser}

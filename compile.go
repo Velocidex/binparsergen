@@ -15,6 +15,8 @@ import (
     "fmt"
     "bytes"
     "io"
+    "sort"
+    "strings"
     "unicode/utf16"
     "unicode/utf8"
 )
@@ -27,6 +29,8 @@ var (
    _ = utf16.Decode
    _ = binary.LittleEndian
    _ = utf8.RuneError
+   _ = sort.Strings
+   _ = strings.Join
 )
 
 `, spec.Module, spec.Filename)
