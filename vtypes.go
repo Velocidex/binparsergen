@@ -5,11 +5,14 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+
+	"github.com/Velocidex/ordereddict"
 )
 
 func FatalIfError(err error, format string, args ...interface{}) {
 	if err != nil {
 		fmt.Printf(format, args...)
+		fmt.Printf(": %v\n", err)
 		os.Exit(1)
 	}
 }
@@ -54,7 +57,15 @@ func ConvertSpec(spec *ConversionSpec) (map[string]*StructDefinition, error) {
 			return nil, err
 		}
 
-		for _, field_name := range SortedKeys(fields) {
+		ordered_fields := ordereddict.NewDict()
+		err = json.Unmarshal(*definition_list[1], &ordered_fields)
+		if err != nil {
+			return nil, err
+		}
+
+		// Preserve the order of the fields.
+		struct_def.fields = ordered_fields.Keys()
+		for _, field_name := range struct_def.fields {
 			field_def := fields[field_name]
 			if InString(spec.FieldBlackList[type_name], field_name) {
 				continue
@@ -74,7 +85,7 @@ func ConvertSpec(spec *ConversionSpec) (map[string]*StructDefinition, error) {
 }
 
 func ParseFieldDef(field_def []*json.RawMessage, spec *ConversionSpec) *FieldDefinition {
-	var offset uint64
+	var offset int64
 
 	err := json.Unmarshal(*field_def[0], &offset)
 	FatalIfError(err, "Decoding target offset")

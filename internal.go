@@ -7,7 +7,7 @@ var (
 // How to represent a field in our data structure.
 type FieldDefinition struct {
 	// A field has an offset within the struct.
-	Offset uint64
+	Offset int64
 
 	// A field may be one of the following parsers. Only one of
 	// these parsers is allowed.
@@ -100,4 +100,6 @@ func (self *FieldDefinition) GetParser() Parser {
 type StructDefinition struct {
 	Size   uint32
 	Fields map[string]*FieldDefinition
+
+	fields []string
 }

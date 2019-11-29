@@ -42,7 +42,7 @@ func GenerateProfileCode(
 	for _, struct_name := range SortedKeys(profile) {
 		struct_def := profile[struct_name]
 		struct_name = NormalizeName(struct_name)
-		for _, field_name := range SortedKeys(struct_def.Fields) {
+		for _, field_name := range struct_def.fields {
 			field_def := struct_def.Fields[field_name]
 
 			result += fmt.Sprintf("    Off_%s_%s int64\n",
