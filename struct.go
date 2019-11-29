@@ -28,7 +28,7 @@ func (self *%[1]s) Size() int {
 `,
 		name, profile_name, definition.Size)
 
-	for _, field_name := range SortedKeys(definition.Fields) {
+	for _, field_name := range definition.fields {
 		field_def := definition.Fields[field_name]
 		result += field_def.GetParser().Compile(name, field_name)
 	}
@@ -40,12 +40,12 @@ func GenerateDebugString(name string, profile_name string, definition *StructDef
 	result := fmt.Sprintf(
 		"func (self *%s) DebugString() string {\n    result := fmt.Sprintf("+
 			"\"struct %s @ %%#x:\\n\", self.Offset)\n", name, name)
-	for _, field_name := range SortedKeys(definition.Fields) {
+	for _, field_name := range definition.fields {
 		field_def := definition.Fields[field_name]
 		if field_def.StringParser != nil ||
 			field_def.UTF16StringParser != nil {
 			result += fmt.Sprintf(
-				"    result += fmt.Sprintf(\"%[1]s: %%v\\n\", string(self.%[1]s()))\n",
+				"    result += fmt.Sprintf(\"  %[1]s: %%v\\n\", string(self.%[1]s()))\n",
 				field_name)
 
 		} else if field_def.Uint64Parser != nil ||
@@ -58,16 +58,16 @@ func GenerateDebugString(name string, profile_name string, definition *StructDef
 			field_def.Uint8Parser != nil ||
 			field_def.Int8Parser != nil {
 			result += fmt.Sprintf(
-				"    result += fmt.Sprintf(\"%[1]s: %%#0x\\n\", self.%[1]s())\n",
+				"    result += fmt.Sprintf(\"  %[1]s: %%#0x\\n\", self.%[1]s())\n",
 				field_name)
 		} else if field_def.Enumeration != nil || field_def.Flags != nil {
 			result += fmt.Sprintf(
-				"    result += fmt.Sprintf(\"%[1]s: %%v\\n\", self.%[1]s().DebugString())\n",
+				"    result += fmt.Sprintf(\"  %[1]s: %%v\\n\", self.%[1]s().DebugString())\n",
 				field_name)
 
 		} else if field_def.StructParser != nil {
 			result += fmt.Sprintf(
-				"    result += fmt.Sprintf(\"%[1]s: {\\n%%v}\\n\", self.%[1]s().DebugString())\n",
+				"    result += fmt.Sprintf(\"  %[1]s: {\\n%%v}\\n\", indent(self.%[1]s().DebugString()))\n",
 				field_name)
 		}
 	}

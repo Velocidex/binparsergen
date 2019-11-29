@@ -31,7 +31,18 @@ var (
    _ = utf8.RuneError
    _ = sort.Strings
    _ = strings.Join
+   _ = io.Copy
 )
+
+func indent(text string) string {
+    result := []string{}
+    lines := strings.Split(text,"\n")
+    for _, line := range lines {
+         result = append(result, "  " + line)
+    }
+    return strings.Join(result, "\n")
+}
+
 
 `, spec.Module, spec.Filename)
 	profile_name := spec.Profile

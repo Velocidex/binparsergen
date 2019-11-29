@@ -110,7 +110,7 @@ type Int64Parser struct {
 func (self Int64Parser) Compile(struct_name string, field_name string) string {
 	return fmt.Sprintf(`
 func (self *%[1]s) %[2]s() int64 {
-    return ParseUint64(self.Reader, self.Profile.Off_%[1]s_%[2]s + self.Offset)
+    return int64(ParseUint64(self.Reader, self.Profile.Off_%[1]s_%[2]s + self.Offset))
 }
 `, struct_name, field_name)
 }
@@ -123,7 +123,7 @@ func ParseInt64(reader io.ReaderAt, offset int64) int64 {
     if err != nil {
        return 0
     }
-    return binary.LittleEndian.Uint64(data)
+    return int64(binary.LittleEndian.Uint64(data))
 }
 `)
 }
