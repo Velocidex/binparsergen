@@ -44,6 +44,9 @@ func GenerateProfileCode(
 		struct_name = NormalizeName(struct_name)
 		for _, field_name := range struct_def.fields {
 			field_def := struct_def.Fields[field_name]
+			if field_def == nil {
+				continue
+			}
 
 			result += fmt.Sprintf("    Off_%s_%s int64\n",
 				struct_name, field_name)

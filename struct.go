@@ -30,6 +30,10 @@ func (self *%[1]s) Size() int {
 
 	for _, field_name := range definition.fields {
 		field_def := definition.Fields[field_name]
+		if field_def == nil {
+			continue
+		}
+
 		result += field_def.GetParser().Compile(name, field_name)
 	}
 
@@ -42,6 +46,10 @@ func GenerateDebugString(name string, profile_name string, definition *StructDef
 			"\"struct %s @ %%#x:\\n\", self.Offset)\n", name, name)
 	for _, field_name := range definition.fields {
 		field_def := definition.Fields[field_name]
+		if field_def == nil {
+			continue
+		}
+
 		if field_def.StringParser != nil ||
 			field_def.UTF16StringParser != nil {
 			result += fmt.Sprintf(
