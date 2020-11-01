@@ -109,12 +109,12 @@ func _ParseParams(params []json.RawMessage, spec *ConversionSpec) *FieldDefiniti
 	FatalIfError(err, "Decoding parser name")
 
 	switch parser_name {
-	case "unsigned long long":
+	case "unsigned long long", "uint64":
 		new_field_def.Uint64Parser = &Uint64Parser{BaseParser: base_parser}
-	case "long long":
+	case "long long", "int64":
 		new_field_def.Int64Parser = &Int64Parser{BaseParser: base_parser}
 
-	case "unsigned long":
+	case "unsigned long", "uint32":
 		new_field_def.Uint32Parser = &Uint32Parser{BaseParser: base_parser}
 
 	case "long":
@@ -175,9 +175,9 @@ func _ParseParams(params []json.RawMessage, spec *ConversionSpec) *FieldDefiniti
 
 	case "String":
 		string_parser := &StringParser{BaseParser: base_parser}
-		if len(params) > 1 {
+		if len(params) > 1 && len(params[1]) > 0 {
 			err = json.Unmarshal(params[1], &string_parser)
-			FatalIfError(err, "Decoding")
+			FatalIfError(err, fmt.Sprintf("Decoding %v", params))
 		}
 
 		new_field_def.StringParser = string_parser

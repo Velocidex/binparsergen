@@ -34,6 +34,14 @@ func (self Flags) IsSet(flag string) bool {
     return result
 }
 
+func (self Flags) Values() []string {
+    result := make([]string, 0, len(self.Names))
+    for k, _ := range self.Names {
+       result = append(result, k)
+    }
+    return result
+}
+
 `
 }
 

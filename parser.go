@@ -485,6 +485,8 @@ func (self BitField) PrototypeName() string {
 func (self BitField) Compile(struct_name string, field_name string) string {
 	parser_func := "ParseUint64"
 	switch self.Target {
+	case "unsigned long long":
+		parser_func = "ParseUint64"
 	case "unsigned long":
 		parser_func = "ParseUint32"
 	case "unsigned short":
@@ -499,7 +501,7 @@ func (self *%[1]s) %[2]s() uint64 {
    return (uint64(value) & %#[4]x) >> %#[5]x
 }
 `, struct_name, field_name, parser_func,
-		(1<<uint64(self.StartBit+self.EndBit))-1, self.StartBit)
+		(1<<uint64(self.EndBit))-1, self.StartBit)
 }
 
 func (self BitField) GoType() string {
