@@ -358,7 +358,7 @@ func (self ArrayParser) Prototype() string {
 	parser := self.Target.GetParser()
 	return fmt.Sprintf(`
 func ParseArray_%[1]s(profile *%[2]s, reader io.ReaderAt, offset int64, count int) []%[3]s%[1]s {
-    result := []%[3]s%[1]s{}
+    result := make([]%[3]s%[1]s, 0, count)
     for i:=0; i<count; i++ {
       value := %[4]s(reader, offset)
       result = append(result, value)
@@ -393,7 +393,7 @@ func (self ArrayParser) GoType() string {
 
 func (self ArrayParser) Size(value string) string {
 	parser := self.Target.GetParser()
-	return fmt.Sprintf("%s * %s", self.Count, parser.Size(value))
+	return fmt.Sprintf("%d * %s", self.Count, parser.Size(value))
 }
 
 type StructParser struct {
