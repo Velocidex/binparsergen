@@ -4,19 +4,19 @@ import (
 	"io/ioutil"
 	"os"
 
-	yaml "gopkg.in/yaml.v2"
+	yaml "github.com/Velocidex/yaml/v2"
 )
 
 // The conversion process is driven by the conversion spec
 // configuration file.
 type ConversionSpec struct {
-	Module              string              `yaml:"Module"`
-	Profile             string              `yaml:"Profile"`
-	Filename            string              `yaml:"Filename"`
-	Structs             []string            `yaml:"Structs"`
-	FieldWhiteList      map[string][]string `yaml:"FieldWhiteList"`
-	FieldBlackList      map[string][]string `yaml:"FieldBlackList"`
-	GenerateDebugString bool                `yaml:"GenerateDebugString"`
+	Module              string              `json:"Module"`
+	Profile             string              `json:"Profile"`
+	Filename            string              `json:"Filename"`
+	Structs             []string            `json:"Structs"`
+	FieldWhiteList      map[string][]string `json:"FieldWhiteList"`
+	FieldBlackList      map[string][]string `json:"FieldBlackList"`
+	GenerateDebugString bool                `json:"GenerateDebugString"`
 }
 
 func LoadSpecFile(filename string) (*ConversionSpec, error) {
