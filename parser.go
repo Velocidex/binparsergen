@@ -350,8 +350,9 @@ func (self Int8Parser) Size(v string) string {
 
 type ArrayParser struct {
 	BaseParser
-	Target *FieldDefinition
-	Count  int
+	Target       *FieldDefinition
+	Count        int
+	DynamicCount string
 }
 
 func (self ArrayParser) Prototype() string {
@@ -378,6 +379,7 @@ func (self ArrayParser) PrototypeName() string {
 func (self ArrayParser) Compile(struct_name string, field_name string) string {
 	parser := self.Target.GetParser()
 
+	if self.DynamicCount == "" {
 	return fmt.Sprintf(`
 func (self *%[1]s) %[2]s() []%[3]s%[4]s {
    return %[5]s(self.Profile, self.Reader, self.Profile.Off_%[1]s_%[2]s + self.Offset, %[6]d)
@@ -385,6 +387,16 @@ func (self *%[1]s) %[2]s() []%[3]s%[4]s {
 `, struct_name, field_name, parser.GoTypePointer(),
 		parser.GoType(), self.PrototypeName(),
 		self.Count)
+	} else {
+		return fmt.Sprintf(`
+func (self *%[1]s) %[2]s() []%[3]s%[4]s {
+   return %[5]s(self.Profile, self.Reader, self.Profile.Off_%[1]s_%[2]s + self.Offset, int(self.%[6]s()))
+}
+`, struct_name, field_name, parser.GoTypePointer(),
+			parser.GoType(), self.PrototypeName(),
+			self.DynamicCount)
+
+	}
 }
 
 func (self ArrayParser) GoType() string {

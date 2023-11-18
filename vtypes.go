@@ -200,9 +200,10 @@ func _ParseParams(params []json.RawMessage, spec *ConversionSpec) *FieldDefiniti
 			vtype_array.Target, vtype_array.TargetArgs}, spec)
 
 		new_field_def.ArrayParser = &ArrayParser{
-			BaseParser: base_parser,
-			Count:      vtype_array.Count,
-			Target:     target_field_def,
+			BaseParser:   base_parser,
+			Count:        vtype_array.Count,
+			DynamicCount: vtype_array.DynamicCount,
+			Target:       target_field_def,
 		}
 
 	default:
@@ -220,7 +221,8 @@ func _ParseParams(params []json.RawMessage, spec *ConversionSpec) *FieldDefiniti
 }
 
 type VtypeArray struct {
-	Target     json.RawMessage
-	TargetArgs json.RawMessage
-	Count      int
+	Target       json.RawMessage
+	TargetArgs   json.RawMessage
+	Count        int
+	DynamicCount string `json:"dynamic_count,omitempty"`
 }
