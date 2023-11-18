@@ -28,6 +28,9 @@ type Parser interface {
 
 	// The size of the object.
 	Size(value string) string
+
+	// The list of PrototypeNames() that this types requires to be present
+	Dependencies() []Parser
 }
 
 type BaseParser struct {
@@ -60,6 +63,10 @@ func (self BaseParser) GoTypePointer() string {
 
 func (self BaseParser) Size(value string) string {
 	return ""
+}
+
+func (self BaseParser) Dependencies() []Parser {
+	return nil
 }
 
 type NullParser struct {
@@ -479,11 +486,29 @@ func (self Pointer) Size(value string) string {
 	return "8"
 }
 
+func (self Pointer) Dependencies() []Parser {
+	return []Parser{&Uint64Parser{}}
+}
+
 type BitField struct {
 	BaseParser
 	StartBit uint64 `json:"start_bit,omitempty"`
 	EndBit   uint64 `json:"end_bit,omitempty"`
 	Target   string `json:"target,omitempty"`
+}
+
+func (self BitField) getParser() Parser {
+	switch self.Target {
+	case "unsigned long long":
+		return &Uint64Parser{}
+	case "unsigned long":
+		return &Uint32Parser{}
+	case "unsigned short":
+		return &Uint16Parser{}
+	case "unsigned char":
+		return &Uint8Parser{}
+	}
+	return &Uint64Parser{}
 }
 
 func (self *BitField) Prototype() string {
@@ -495,24 +520,13 @@ func (self BitField) PrototypeName() string {
 }
 
 func (self BitField) Compile(struct_name string, field_name string) string {
-	parser_func := "ParseUint64"
-	switch self.Target {
-	case "unsigned long long":
-		parser_func = "ParseUint64"
-	case "unsigned long":
-		parser_func = "ParseUint32"
-	case "unsigned short":
-		parser_func = "ParseUint16"
-	case "unsigned char":
-		parser_func = "ParseUint8"
-	}
 
 	return fmt.Sprintf(`
 func (self *%[1]s) %[2]s() uint64 {
    value := %[3]s(self.Reader, self.Profile.Off_%[1]s_%[2]s + self.Offset)
    return (uint64(value) & %#[4]x) >> %#[5]x
 }
-`, struct_name, field_name, parser_func,
+`, struct_name, field_name, self.getParser().PrototypeName(),
 		(1<<uint64(self.EndBit))-1, self.StartBit)
 }
 
@@ -522,4 +536,8 @@ func (self BitField) GoType() string {
 
 func (self BitField) Size(value string) string {
 	return "8"
+}
+
+func (self BitField) Dependencies() []Parser {
+	return []Parser{self.getParser()}
 }
