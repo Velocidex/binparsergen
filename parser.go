@@ -117,7 +117,7 @@ type Int64Parser struct {
 func (self Int64Parser) Compile(struct_name string, field_name string) string {
 	return fmt.Sprintf(`
 func (self *%[1]s) %[2]s() int64 {
-    return int64(ParseUint64(self.Reader, self.Profile.Off_%[1]s_%[2]s + self.Offset))
+    return ParseInt64(self.Reader, self.Profile.Off_%[1]s_%[2]s + self.Offset)
 }
 `, struct_name, field_name)
 }
@@ -387,13 +387,13 @@ func (self ArrayParser) Compile(struct_name string, field_name string) string {
 	parser := self.Target.GetParser()
 
 	if self.DynamicCount == "" {
-	return fmt.Sprintf(`
+		return fmt.Sprintf(`
 func (self *%[1]s) %[2]s() []%[3]s%[4]s {
    return %[5]s(self.Profile, self.Reader, self.Profile.Off_%[1]s_%[2]s + self.Offset, %[6]d)
 }
 `, struct_name, field_name, parser.GoTypePointer(),
-		parser.GoType(), self.PrototypeName(),
-		self.Count)
+			parser.GoType(), self.PrototypeName(),
+			self.Count)
 	} else {
 		return fmt.Sprintf(`
 func (self *%[1]s) %[2]s() []%[3]s%[4]s {
