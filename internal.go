@@ -81,9 +81,6 @@ func (self *FieldDefinition) GetParser() Parser {
 	} else if self.StringParser != nil {
 		result = self.StringParser
 
-	} else if self.SignatureParser != nil {
-		result = self.SignatureParser
-
 	} else if self.UTF16StringParser != nil {
 		result = self.UTF16StringParser
 
@@ -92,6 +89,12 @@ func (self *FieldDefinition) GetParser() Parser {
 	_, pres := prototypes[result.PrototypeName()]
 	if !pres {
 		prototypes[result.PrototypeName()] = result.Prototype()
+	}
+
+	for _, dependency := range result.Dependencies() {
+		if _, pres := prototypes[dependency.PrototypeName()]; !pres {
+			prototypes[dependency.PrototypeName()] = dependency.Prototype()
+		}
 	}
 	return result
 }
