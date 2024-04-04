@@ -88,7 +88,8 @@ func (self *%[1]s) %[2]s() uint64 {
 func (self Uint64Parser) Prototype() string {
 	return fmt.Sprintf(`
 func ParseUint64(reader io.ReaderAt, offset int64) uint64 {
-    data := make([]byte, 8)
+	var buf [8]byte
+	data := buf[:]
     _, err := reader.ReadAt(data, offset)
     if err != nil {
        return 0
@@ -125,7 +126,8 @@ func (self *%[1]s) %[2]s() int64 {
 func (self Int64Parser) Prototype() string {
 	return fmt.Sprintf(`
 func ParseInt64(reader io.ReaderAt, offset int64) int64 {
-    data := make([]byte, 8)
+	var buf [8]byte
+	data := buf[:]
     _, err := reader.ReadAt(data, offset)
     if err != nil {
        return 0
@@ -154,7 +156,8 @@ type Uint32Parser struct {
 func (self Uint32Parser) Prototype() string {
 	return `
 func ParseUint32(reader io.ReaderAt, offset int64) uint32 {
-    data := make([]byte, 4)
+	var buf [4]byte
+	data := buf[:]
     _, err := reader.ReadAt(data, offset)
     if err != nil {
        return 0
@@ -189,7 +192,8 @@ type Int32Parser struct {
 func (self Int32Parser) Prototype() string {
 	return `
 func ParseInt32(reader io.ReaderAt, offset int64) int32 {
-    data := make([]byte, 4)
+	var buf [4]byte
+	data := buf[:]
     _, err := reader.ReadAt(data, offset)
     if err != nil {
        return 0
@@ -224,7 +228,8 @@ type Uint16Parser struct {
 func (self Uint16Parser) Prototype() string {
 	return `
 func ParseUint16(reader io.ReaderAt, offset int64) uint16 {
-    data := make([]byte, 2)
+	var buf [2]byte
+	data := buf[:]
     _, err := reader.ReadAt(data, offset)
     if err != nil {
        return 0
@@ -259,7 +264,8 @@ type Int16Parser struct {
 func (self Int16Parser) Prototype() string {
 	return `
 func ParseInt16(reader io.ReaderAt, offset int64) int16 {
-    data := make([]byte, 2)
+	var buf [2]byte
+	data := buf[:]
     _, err := reader.ReadAt(data, offset)
     if err != nil {
        return 0
@@ -294,12 +300,13 @@ type Uint8Parser struct {
 func (self Uint8Parser) Prototype() string {
 	return `
 func ParseUint8(reader io.ReaderAt, offset int64) byte {
-    result := make([]byte, 1)
-    _, err := reader.ReadAt(result, offset)
+	var buf [1]byte
+	data := buf[:]
+    _, err := reader.ReadAt(data, offset)
     if err != nil {
        return 0
     }
-    return result[0]
+    return data[0]
 }
 `
 }
@@ -328,7 +335,8 @@ type Int8Parser struct {
 func (self Int8Parser) Prototype() string {
 	return `
 func ParseInt8(reader io.ReaderAt, offset int64) int8 {
-    result := make([]byte, 1)
+	var buf [1]byte
+	data := buf[:]
     _, err := reader.ReadAt(result, offset)
     if err != nil {
        return 0
