@@ -10,7 +10,8 @@ type StringParser struct {
 func (self StringParser) Prototype() string {
 	return `
 func ParseTerminatedString(reader io.ReaderAt, offset int64) string {
-   data := make([]byte, 1024)
+   var buf [1024]byte
+   data := buf[:]
    n, err := reader.ReadAt(data, offset)
    if err != nil && err != io.EOF {
      return ""
@@ -72,7 +73,8 @@ type UTF16StringParser struct {
 func (self UTF16StringParser) Prototype() string {
 	return `
 func ParseTerminatedUTF16String(reader io.ReaderAt, offset int64) string {
-   data := make([]byte, 1024)
+   var buf [1024]byte
+   data := buf[:]
    n, err := reader.ReadAt(data, offset)
    if err != nil && err != io.EOF {
      return ""
