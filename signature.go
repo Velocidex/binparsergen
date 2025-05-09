@@ -19,6 +19,13 @@ func (self Signature) IsValid() bool {
 }
 
 func ParseSignature(reader io.ReaderAt, offset int64, length int64) string {
+    if length <= 0 {
+      length = 0
+    }
+    if length > 4000000 {
+       length = 4000000
+    }
+
    data := make([]byte, length)
    n, err := reader.ReadAt(data, offset)
    if err != nil && err != io.EOF {

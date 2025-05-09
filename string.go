@@ -24,6 +24,13 @@ func ParseTerminatedString(reader io.ReaderAt, offset int64) string {
 }
 
 func ParseString(reader io.ReaderAt, offset int64, length int64) string {
+    if length <= 0 {
+      length = 0
+    }
+    if length > 4000000 {
+       length = 4000000
+    }
+
    data := make([]byte, length)
    n, err := reader.ReadAt(data, offset)
    if err != nil && err != io.EOF {
@@ -91,6 +98,13 @@ func ParseTerminatedUTF16String(reader io.ReaderAt, offset int64) string {
 }
 
 func ParseUTF16String(reader io.ReaderAt, offset int64, length int64) string {
+    if length <= 0 {
+      length = 0
+    }
+    if length > 4000000 {
+       length = 4000000
+    }
+
    data := make([]byte, length)
    n, err := reader.ReadAt(data, offset)
    if err != nil && err != io.EOF {
