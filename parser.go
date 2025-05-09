@@ -374,6 +374,12 @@ func (self ArrayParser) Prototype() string {
 	parser := self.Target.GetParser()
 	return fmt.Sprintf(`
 func ParseArray_%[1]s(profile *%[2]s, reader io.ReaderAt, offset int64, count int) []%[3]s%[1]s {
+    if count <= 0 {
+      count = 0
+    }
+    if count > 4000000 {
+       count = 4000000
+    }
     result := make([]%[3]s%[1]s, 0, count)
     for i:=0; i<count; i++ {
       value := %[4]s(reader, offset)
